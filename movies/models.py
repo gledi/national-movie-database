@@ -14,11 +14,19 @@ class Director(models.Model):
 
 
 class Movie(models.Model):
+    RATINGS = [
+        ("G", "G - General Audiences"),
+        ("PG", "PG - Parental Guidance Suggesteds"),
+        ("PG-13", "PG-13 - Parents Strongly Cautioned"),
+        ("R", "R - Restricted"),
+        ("NC-17", "NC-17 – Adults Only"),
+    ]
+
     title = models.CharField(max_length=255)
     year = models.IntegerField()
     runtime = models.IntegerField()
     plot = models.TextField(null=True)
-    rating = models.CharField(max_length=10)
+    rating = models.CharField(max_length=10, choices=RATINGS)
     director = models.ForeignKey(Director, on_delete=models.CASCADE)
     # director_id = models.IntegerField()
     actors = models.ManyToManyField('movies.Actor')

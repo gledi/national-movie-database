@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 
 from movies.models import Director, Movie
+from movies.forms import MovieForm, MovieModelForm
 
 
 def get_movie_list(request):
@@ -22,23 +23,32 @@ def get_movie_detail(request, pk):
     })
 
 
-def add_movie(request):
-    directors = Director.objects.all()
+def add_movie_old(request):
     if request.method == "POST":
-        movie = Movie(
-            title=request.POST["title"],
-            plot=request.POST["plot"],
-            runtime=int(request.POST["runtime"]),
-            year=int(request.POST["year"]),
-            director_id=int(request.POST["director_id"]),
-            rating=request.POST["rating"],
-        )
-        movie.save()
-        # return HttpResponseRedirect(
-        #     reverse("movie-detail", kwargs={"pk": movie.pk})
-        # )
-        # return redirect("movie-detail", pk=movie.pk, permanent=False)
-        return redirect(movie, permanent=False)
+        form = MovieForm(request.POST)
+        if form.is_valid():
+            movie = Movie(**form.cleaned_data)
+            movie.save()
+            # return HttpResponseRedirect(
+            #     reverse("movie-detail", kwargs={"pk": movie.pk})
+            # )
+            # return redirect("movie-detail", pk=movie.pk, permanent=False)
+            return redirect(movie, permanent=False)
+    else:
+        form = MovieForm()
     return render(request, "movies/movie_add.html", context={
-        "directors": directors
+        "form": form,
+    })
+
+
+def add_movie(request):
+    if request.method == "POST":
+        form = MovieModelForm(request.POST)
+        if form.is_valid():
+            movie = form.save()
+            return redirect(movie, permanent=False)
+    else:
+        form = MovieModelForm()
+    return render(request, "movies/movie_add.html", context={
+        "form": form,
     })
