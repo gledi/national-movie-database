@@ -1,6 +1,7 @@
+from http.client import INTERNAL_SERVER_ERROR
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from movies.models import Director, Movie
 from movies.forms import MovieForm, MovieModelForm
@@ -49,6 +50,32 @@ def add_movie(request):
             return redirect(movie, permanent=False)
     else:
         form = MovieModelForm()
-    return render(request, "movies/movie_add.html", context={
+    return render(request, "movies/movie_form.html", context={
         "form": form,
+    })
+
+
+def edit_movie(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+
+    if request.method == "POST":
+        form = MovieModelForm(request.POST, instance=movie)
+        if form.is_valid():
+            form.save()
+            return redirect(movie)
+    else:
+        form = MovieModelForm(instance=movie)
+    return render(request, "movies/movie_form.html", context={
+        "form": form,
+        "movie": movie,
+    })
+
+
+def delete_movie(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+    if request.method == "POST":
+        movie.delete()
+        return redirect("movie-list")
+    return render(request, "movies/movie_delete.html", context={
+        "movie": movie
     })

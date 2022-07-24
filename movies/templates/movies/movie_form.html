@@ -3,7 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+{% if movie %}
+<h1>Edit <small>{{ movie.title }}</small></h1>
+{% else %}
 <h1>Add Movie</h1>
+{% endif %}
 <form action="" method="post" novalidate>
     {% csrf_token %}
     {{ form|crispy }}

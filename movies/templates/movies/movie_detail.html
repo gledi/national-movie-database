@@ -1,7 +1,13 @@
 {% extends '_base.html' %}
 
 {% block content %}
-<h1>{{ movie.title }}</h1>
+<div class="d-flex justify-content-between align-items-center">
+    <h1>{{ movie.title }}</h1>
+    <div>
+      <a class="btn btn-warning" href="{% url 'movie-edit' pk=movie.pk %}">Edit</a>
+      <a class="btn btn-danger" href="{% url 'movie-delete' pk=movie.pk %}">Delete</a>
+    </div>
+</div>
 <div>{{ movie.year }} - {{ movie.rating }} - {{ movie.runtime }}</div>
 <div>{{ movie.plot }}</div>
 {% endblock content %}
