@@ -45,4 +45,9 @@ class MovieModelForm(forms.ModelForm):
             "rating",
             "director",
         ]
-        
+
+
+class DirectorForm(forms.ModelForm):
+    class Meta:
+        model = Director
+        fields = '__all__'

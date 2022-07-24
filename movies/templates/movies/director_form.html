@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+{% if director %}
+<h1>Edit <small>{{ director }}</small></h1>
+{% else %}
+<h1>Add Director</h1>
+{% endif %}
+<form action="" method="post" novalidate enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="text-center">
+        <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+</form>
+{% endblock content %}

@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from movies.models import Director, Movie
-from movies.forms import MovieForm, MovieModelForm
+from movies.forms import DirectorForm, MovieForm, MovieModelForm
 
 
 def get_movie_list(request):
@@ -79,3 +79,75 @@ def delete_movie(request, pk):
     return render(request, "movies/movie_delete.html", context={
         "movie": movie
     })
+
+
+def get_director_list(request):
+    directors = Director.objects.all()
+    return render(request, "movies/director_list.html", context={
+        "directors": directors
+    })
+
+
+def add_director(request):
+    if request.method == "POST":
+        form = DirectorForm(request.POST, request.FILES)
+        if form.is_valid():
+            director = form.save()
+            return redirect("director-detail", pk=director.pk)
+    else:
+        form = DirectorForm()
+    return render(request, "movies/director_form.html", context={
+        "form": form
+    })
+
+
+def get_director_detail(request, pk):
+    director = get_object_or_404(Director, pk=pk)
+    return render(request, "movies/director_detail.html", context={
+        "director": director
+    })
+
+
+# def edit_director(request, pk):
+#     director = get_object_or_404(Director, pk=pk)
+#     if request.method == "POST":
+#         form = DirectorForm(request.POST, request.FILES, instance=director)
+#         if form.is_valid():
+#             director = form.save()
+#             return redirect("director-detail", pk=director.pk)
+#     else:
+#         form = DirectorForm(instance=director)
+#     return render(request, "movies/director_form.html", context={
+#         "director": director,
+#         "form": form
+#     })
+
+
+def delete_director(request, pk):
+    director = get_object_or_404(Director, pk=pk)
+    if request.method == "POST":
+        director.delete()
+        return redirect("director-list")
+    return render(request, "movies/director_delete.html", context={
+        "director": director
+    })
+
+
+def edit_obj(klass, form_class, context_object_name="obj"):
+    def view(request, pk):
+        obj = get_object_or_404(klass, pk=pk)
+        if request.method == "POST":
+            form = form_class(request.POST, request.FILES, instance=obj)
+            if form.is_valid():
+                obj = form.save()
+                return redirect(f"{klass._meta.model_name}-detail", pk=obj.pk)
+        else:
+            form = form_class(instance=obj)
+        return render(request, f"{klass._meta.app_label}/{klass._meta.model_name}_form.html", context={
+            "obj": obj,
+            "form": form
+        })
+
+    return view
+
+edit_director = edit_obj(Director, DirectorForm)

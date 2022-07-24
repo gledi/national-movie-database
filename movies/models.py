@@ -5,6 +5,9 @@ from django.urls import reverse
 class Director(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    bio = models.TextField(null=True)
+    birthdate = models.DateField(null=True)
+    photo = models.ImageField(null=True, upload_to="directors")
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
