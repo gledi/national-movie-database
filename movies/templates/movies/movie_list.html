@@ -33,7 +33,11 @@
 <section>
 {% for movie in movies %}
     <div>
-        <h3>{{ movie.title }}</h3>
+        <h3>
+            <a href="{% url 'movie-detail' pk=movie.pk %}">
+                {{ movie.title }}
+            </a>
+        </h3>
         <div>
             {{ movie.year }} - {{ movie.rating }} - {{ movie.runtime }}
         </div>

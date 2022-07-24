@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Director(models.Model):
@@ -27,6 +28,9 @@ class Movie(models.Model):
 
     def __str__(self):
         return f'{self.title} ({self.year})'
+
+    def get_absolute_url(self):
+        return reverse("movie-detail", kwargs={"pk": self.pk})
 
 
 class Actor(models.Model):
