@@ -1,6 +1,7 @@
 {% extends '_base.html' %}
 
 {% block styles %}
+{{ block.super }}
 <style>
 .header-title {
     display: flex;
@@ -8,27 +9,13 @@
     justify-content: space-between;
     align-items: center;
 }
-
-.header-title > a {
-    border: 1px solid black;
-    padding: 0.5rem 2.5rem;
-    background-color: #efefef;
-    border-radius: 2px;
-    text-decoration: none;
-    color: #323232;
-}
-
-.header-title > a:hover {
-    background-color: #e0e0e0;
-    color: black;
-}
 </style>
 {% endblock styles %}
 
 {% block content %}
 <div class="header-title">
     <h1>Latest Movies</h1>
-    <a href="{% url 'movie-add' %}">Add Movie</a>
+    <a class="btn btn-primary" href="{% url 'movie-add' %}">Add Movie</a>
 </div>
 <section>
 {% for movie in movies %}
