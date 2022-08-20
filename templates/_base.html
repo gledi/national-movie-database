@@ -51,7 +51,7 @@
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Profile</a>
+              <a class="nav-link" href="#">{{ request.session.movies_seen|default:0 }}</a>
             </li>
             {% else %}
             <li class="nav-item">

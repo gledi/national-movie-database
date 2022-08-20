@@ -1,13 +1,14 @@
 from http.client import INTERNAL_SERVER_ERROR
+from math import perm
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
-from movies.models import Director, Movie
-from movies.forms import DirectorForm, MovieForm, MovieModelForm
+from movies.models import Director, Movie, Review
+from movies.forms import DirectorForm, MovieForm, MovieModelForm, ReviewForm
 from users.decorators import signin_required
 
 
@@ -28,8 +29,10 @@ def get_movie_detail(request, pk):
         movie = Movie.objects.get(pk=pk) # select * from movies where id = ?
     except Movie.DoesNotExist:
         raise Http404("Movie not found")
+    request.session["movies_seen"] = request.session.get("movies_seen", 0) + 1
     return render(request, "movies/movie_detail.html", context={
-        "movie": movie
+        "movie": movie,
+        "reviews": movie.review_set.filter(is_approved=True).all(),
     })
 
 
@@ -54,7 +57,8 @@ def add_movie_old(request):
         "form": form,
     })
 
-@login_required
+
+@permission_required("movies.add_movie")
 def add_movie(request):
     if request.method == "POST":
         form = MovieModelForm(request.POST)
@@ -95,6 +99,27 @@ def edit_movie(request, pk):
         "form": form,
         "movie": movie,
     })
+
+
+@login_required
+def review_movie(request, pk):
+    movie = get_object_or_404(Movie, pk=pk)
+
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.movie = movie
+            review.user = request.user
+            review.save()
+            return redirect("movie-detail", pk=movie.pk)
+    else:
+        form = ReviewForm()
+    return render(request, "movies/movie_review.html", context={
+        "form": form,
+        "movie": movie,
+    })
+
 
 
 class MovieUpdateView(UpdateView):
@@ -187,3 +212,24 @@ def edit_obj(klass, form_class, context_object_name="obj"):
     return view
 
 edit_director = edit_obj(Director, DirectorForm)
+
+
+@permission_required("movies.approve_review")
+def unapproved_reviews(request):
+    reviews = (Review.objects
+        .select_related("movie", "user")
+        .filter(is_approved=False)
+        .all()
+    )
+    return render(request, "movies/unapproved_reviews.html", context={
+        "reviews": reviews
+    })
+
+
+@permission_required("movies.approve_review")
+def approve_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    if request.method == "POST":
+        review.is_approved = True
+        review.save()
+        return redirect("unapproved-reviews")

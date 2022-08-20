@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
 
 
 class Director(models.Model):
@@ -60,3 +61,18 @@ class Actor(models.Model):
 #     bio text null,
 #     constraint pk_actors primary key (id)
 # )
+
+
+
+class Review(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    content = models.TextField(null=True)
+    is_approved = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "reviews"
+        permissions = [
+            ("approve_review", "Can approve review"),
+        ]

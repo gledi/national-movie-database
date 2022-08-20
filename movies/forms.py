@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Director, Movie
+from .models import Director, Movie, Review
 
 
 def _get_directors():
@@ -51,3 +51,12 @@ class DirectorForm(forms.ModelForm):
     class Meta:
         model = Director
         fields = '__all__'
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = [
+            "rating",
+            "content",
+        ]
