@@ -35,6 +35,19 @@ class Movie(models.Model):
     # director_id = models.IntegerField()
     actors = models.ManyToManyField('movies.Actor')
 
+    @property
+    def props(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "year": self.year,
+            "runtime": self.runtime,
+            "director": {
+                "id": self.director.id,
+                "name": str(self.director)
+            },
+        }
+
     class Meta:
         db_table = "movies"
 

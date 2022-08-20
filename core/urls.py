@@ -8,6 +8,7 @@ urlpatterns = [
     path("", include("pages.urls")),
     path("", include("movies.urls")),
     path("auth/", include("django.contrib.auth.urls")),
+    path("api/v1/", include("apiv1.urls")),
 ]
 
 
