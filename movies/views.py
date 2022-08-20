@@ -1,7 +1,8 @@
 from http.client import INTERNAL_SERVER_ERROR
 from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from movies.models import Director, Movie
 from movies.forms import DirectorForm, MovieForm, MovieModelForm
@@ -14,6 +15,11 @@ def get_movie_list(request):
     })
 
 
+class MovieListView(ListView):
+    model = Movie
+    context_object_name = "movies"
+
+
 def get_movie_detail(request, pk):
     try:
         movie = Movie.objects.get(pk=pk) # select * from movies where id = ?
@@ -22,6 +28,10 @@ def get_movie_detail(request, pk):
     return render(request, "movies/movie_detail.html", context={
         "movie": movie
     })
+
+
+class MovieDetailView(DetailView):
+    model = Movie
 
 
 def add_movie_old(request):
@@ -55,6 +65,19 @@ def add_movie(request):
     })
 
 
+class MovieCreateView(CreateView):
+    model = Movie
+    # form_class = MovieModelForm
+    fields = [
+        "title",
+        "year",
+        "runtime",
+        "plot",
+        "rating",
+        "director",
+    ]
+
+
 def edit_movie(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
 
@@ -71,14 +94,24 @@ def edit_movie(request, pk):
     })
 
 
+class MovieUpdateView(UpdateView):
+    model = Movie
+    form_class = MovieModelForm
+
+
 def delete_movie(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
     if request.method == "POST":
         movie.delete()
         return redirect("movie-list")
-    return render(request, "movies/movie_delete.html", context={
+    return render(request, "movies/movie_confirm_delete.html", context={
         "movie": movie
     })
+
+
+class MovieDeleteView(DeleteView):
+    model = Movie
+    success_url = reverse_lazy("movie-list")
 
 
 def get_director_list(request):
