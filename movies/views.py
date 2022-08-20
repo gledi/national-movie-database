@@ -3,9 +3,12 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from movies.models import Director, Movie
 from movies.forms import DirectorForm, MovieForm, MovieModelForm
+from users.decorators import signin_required
 
 
 def get_movie_list(request):
@@ -51,7 +54,7 @@ def add_movie_old(request):
         "form": form,
     })
 
-
+@login_required
 def add_movie(request):
     if request.method == "POST":
         form = MovieModelForm(request.POST)

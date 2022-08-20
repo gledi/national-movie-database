@@ -20,6 +20,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     "crispy_bootstrap5",
+    "debug_toolbar",
 
     'pages', # pages.apps.PagesConfig
     'users',
@@ -27,8 +28,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'core.middleware.DeveloperMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,3 +126,9 @@ AUTH_USER_MODEL = "users.User"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+INTERNAL_IPS = ["127.0.0.1"]
+
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
