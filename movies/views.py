@@ -58,7 +58,8 @@ def add_movie_old(request):
     })
 
 
-@permission_required("movies.add_movie")
+# @permission_required("movies.add_movie")
+@login_required
 def add_movie(request):
     if request.method == "POST":
         form = MovieModelForm(request.POST)

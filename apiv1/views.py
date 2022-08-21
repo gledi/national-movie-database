@@ -2,6 +2,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -25,9 +26,9 @@ class MovieListCreateView(APIView):
         ms = MovieModelSerializer(data=request.data)
         if ms.is_valid():
             movie = ms.save(director_id=1)
-            return Response(ms.data, status=201)
+            return Response(ms.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(ms.errors, status=400)
+            return Response(ms.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MovieDetailUpdateDeleteView(APIView):
@@ -42,7 +43,7 @@ class MovieDetailUpdateDeleteView(APIView):
         if ms.is_valid():
             ms.save()
             return Response(ms.data)
-        return Response(ms.errors, status=400)
+        return Response(ms.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
         return self._update(request, pk)
@@ -53,4 +54,4 @@ class MovieDetailUpdateDeleteView(APIView):
     def delete(self, request, pk, format=None):
         movie = get_object_or_404(Movie, pk=pk)
         movie.delete()
-        return Response(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)

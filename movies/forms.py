@@ -1,3 +1,4 @@
+import datetime as dt
 from django import forms
 
 from .models import Director, Movie, Review
@@ -45,6 +46,19 @@ class MovieModelForm(forms.ModelForm):
             "rating",
             "director",
         ]
+
+    def clean_year(self):
+        today = dt.date.today()
+        year = self.cleaned_data["year"]
+        if year < 1900 or year > today.year + 1:
+            raise forms.ValidationError("Invalid movie release year")
+        return year
+
+    def clean_runtime(self):
+        runtime = self.cleaned_data["runtime"]
+        if 20 <= runtime <= 600:
+            return runtime
+        raise forms.ValidationError("Movies last between 20 and 600 minutes only")
 
 
 class DirectorForm(forms.ModelForm):
