@@ -60,3 +60,9 @@ class ReviewForm(forms.ModelForm):
             "rating",
             "content",
         ]
+
+    def clean_rating(self):
+        rating = self.cleaned_data["rating"]
+        if not (1 <= rating <= 5):
+            raise forms.ValidationError("Rating must bee between 1 and 5")
+        return rating

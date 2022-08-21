@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from movies.models import Movie
+from movies.models import Movie, Review
 
 
 class MovieSerializer(serializers.Serializer):
@@ -23,3 +23,14 @@ class MovieModelSerializer(serializers.ModelSerializer):
             "plot",
             "rating",
         ]
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ["rating", "content"]
+
+    def validate_rating(self, value):
+        if not (1 <= value <= 5):
+            raise serializers.ValidationError("Rating should be between 1 and 5")
+        return value
