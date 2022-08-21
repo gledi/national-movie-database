@@ -1,17 +1,16 @@
-import json
-
-from django.shortcuts import get_object_or_404
-from django.http import HttpRequest, JsonResponse, Http404
 from django.core.paginator import Paginator, EmptyPage
-from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+
+from rest_framework.views import APIView
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from movies.models import Movie
-from .serializers import MovieSerializer, MovieModelSerializer
+from .serializers import MovieModelSerializer
 
-
-@csrf_exempt
-def get_movie_list(request: HttpRequest):
-    if request.method == "GET":
+class MovieListCreateView(APIView):
+    def get(self, request: Request, format=None) -> Response:
         page_num = int(request.GET.get("page", "1"))
         movies = Movie.objects.order_by('-pk').all()
         paginator = Paginator(movies, per_page=2)
@@ -20,20 +19,38 @@ def get_movie_list(request: HttpRequest):
         except EmptyPage:
             raise Http404("No more movies")
         ms = MovieModelSerializer(page.object_list, many=True)
-        return JsonResponse({"items": ms.data, "total": paginator.count, "page": page.number})
-    elif request.method == "POST":
-        ms = MovieModelSerializer(data=json.loads(request.body))
+        return Response({"items": ms.data, "total": paginator.count, "page": page.number})
+
+    def post(self, request: Request, format=None) -> Response:
+        ms = MovieModelSerializer(data=request.data)
         if ms.is_valid():
-            movie = Movie(**ms.data, director_id=1)
-            movie.save()
-            return JsonResponse({"movie": ms.data}, status=201)
+            movie = ms.save(director_id=1)
+            return Response(ms.data, status=201)
         else:
-            return JsonResponse(ms.errors, status=400)
-    else:
-        return JsonResponse({"message": "Method not allowed"}, status=405)
+            return Response(ms.errors, status=400)
 
 
-def get_movie_details(request, pk):
-    movie = get_object_or_404(Movie, pk=pk)
-    ms = MovieModelSerializer(movie)
-    return JsonResponse(ms.data)
+class MovieDetailUpdateDeleteView(APIView):
+    def get(self, request, pk, format=None):
+        movie = get_object_or_404(Movie, pk=pk)
+        ms = MovieModelSerializer(movie)
+        return Response(ms.data)
+
+    def _update(self, request, pk, partial=False):
+        movie = get_object_or_404(Movie, pk=pk)
+        ms = MovieModelSerializer(movie, data=request.data, partial=partial)
+        if ms.is_valid():
+            ms.save()
+            return Response(ms.data)
+        return Response(ms.errors, status=400)
+
+    def put(self, request, pk, format=None):
+        return self._update(request, pk)
+
+    def patch(self, request, pk, format=None):
+        return self._update(request, pk, partial=True)
+
+    def delete(self, request, pk, format=None):
+        movie = get_object_or_404(Movie, pk=pk)
+        movie.delete()
+        return Response(status=204)
