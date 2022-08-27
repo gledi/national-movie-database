@@ -9,6 +9,7 @@ urlpatterns = [
     path("movies/add/", views.add_movie, name="movie-add"),
     # path("movies/add/", views.MovieCreateView.as_view(), name="movie-add"),
     path("movies/<int:pk>/", views.get_movie_detail, name="movie-detail"),
+    path("movies/<slug>/", views.get_movie_by_slug, name="movie-detail2"),
     # path("movies/<int:pk>/", views.MovieDetailView.as_view(), name="movie-detail"),
     # path("movies/<int:pk>/edit/", views.edit_movie, name='movie-edit'),
     path("movies/<int:pk>/edit/", views.MovieUpdateView.as_view(), name="movie-edit"),

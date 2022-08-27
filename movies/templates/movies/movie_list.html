@@ -1,6 +1,5 @@
 {% extends '_base.html' %}
-
-{% load pagination_extras %}
+{% load i18n pagination_extras %}
 
 {% block styles %}
 {{ block.super }}
@@ -16,7 +15,7 @@
 
 {% block content %}
 <div class="header-title">
-    <h1>Latest Movies</h1>
+    <h1>{% translate 'Latest Movies' %}</h1>
     <a class="btn btn-primary" href="{% url 'movie-add' %}">Add Movie</a>
 </div>
 <div>

@@ -1,5 +1,7 @@
 from django.http import Http404
+from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (
     ListView,
@@ -35,7 +37,7 @@ def get_movie_detail(request, pk):
     try:
         movie = Movie.objects.get(pk=pk)  # select * from movies where id = ?
     except Movie.DoesNotExist:
-        raise Http404("Movie not found")
+        raise Http404(_("Movie not found"))
     request.session["movies_seen"] = request.session.get("movies_seen", 0) + 1
     return render(
         request,
@@ -44,6 +46,15 @@ def get_movie_detail(request, pk):
             "movie": movie,
             "reviews": movie.review_set.filter(is_approved=True).all(),
         },
+    )
+
+
+def get_movie_by_slug(request, slug):
+    movie = get_object_or_404(Movie, slug=slug)
+    return render(
+        request,
+        "movies/movie_detail.html",
+        context={"movie": movie},
     )
 
 
@@ -80,6 +91,7 @@ def add_movie(request):
         form = MovieModelForm(request.POST)
         if form.is_valid():
             movie = form.save()
+            messages.info(request, _("Movie saved successfully"))
             return redirect(movie, permanent=False)
     else:
         form = MovieModelForm()
@@ -112,6 +124,7 @@ def edit_movie(request, pk):
         form = MovieModelForm(request.POST, instance=movie)
         if form.is_valid():
             form.save()
+            messages
             return redirect(movie)
     else:
         form = MovieModelForm(instance=movie)

@@ -8,4 +8,5 @@ urlpatterns = [
     path("about/", views.about_us, name="about"),
     path("contact-us/", views.contact_us, name="contact"),
     path("privacy-policy/", views.privacy_policy, name="privacy"),
+    path("django-migrations/", views.get_django_migrations),
 ]
