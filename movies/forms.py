@@ -6,8 +6,7 @@ from .models import Director, Movie, Review
 
 def _get_directors():
     return [("", "-- Director --")] + [
-        (director.pk, str(director))
-        for director in Director.objects.all()
+        (director.pk, str(director)) for director in Director.objects.all()
     ]
 
 
@@ -32,7 +31,9 @@ class MovieForm(forms.Form):
     runtime = forms.IntegerField(min_value=10, max_value=500, required=True)
     plot = forms.CharField(widget=forms.Textarea, required=False)
     rating = forms.ChoiceField(required=True, choices=RATINGS)
-    director = forms.TypedChoiceField(required=True, coerce=_to_director, choices=_get_directors)
+    director = forms.TypedChoiceField(
+        required=True, coerce=_to_director, choices=_get_directors
+    )
 
 
 class MovieModelForm(forms.ModelForm):
@@ -64,7 +65,7 @@ class MovieModelForm(forms.ModelForm):
 class DirectorForm(forms.ModelForm):
     class Meta:
         model = Director
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ReviewForm(forms.ModelForm):

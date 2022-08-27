@@ -1,22 +1,28 @@
-from http.client import INTERNAL_SERVER_ERROR
-from math import perm
-from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.http import Http404
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib import messages
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
 from django.contrib.auth.decorators import login_required, permission_required
 
 from movies.models import Director, Movie, Review
 from movies.forms import DirectorForm, MovieForm, MovieModelForm, ReviewForm
-from users.decorators import signin_required
 
 
 def get_movie_list(request):
     movies = Movie.objects.all()
-    return render(request, "movies/movie_list.html", context={
-        "movies": movies,
-    })
+    return render(
+        request,
+        "movies/movie_list.html",
+        context={
+            "movies": movies,
+        },
+    )
 
 
 class MovieListView(ListView):
@@ -26,14 +32,18 @@ class MovieListView(ListView):
 
 def get_movie_detail(request, pk):
     try:
-        movie = Movie.objects.get(pk=pk) # select * from movies where id = ?
+        movie = Movie.objects.get(pk=pk)  # select * from movies where id = ?
     except Movie.DoesNotExist:
         raise Http404("Movie not found")
     request.session["movies_seen"] = request.session.get("movies_seen", 0) + 1
-    return render(request, "movies/movie_detail.html", context={
-        "movie": movie,
-        "reviews": movie.review_set.filter(is_approved=True).all(),
-    })
+    return render(
+        request,
+        "movies/movie_detail.html",
+        context={
+            "movie": movie,
+            "reviews": movie.review_set.filter(is_approved=True).all(),
+        },
+    )
 
 
 class MovieDetailView(DetailView):
@@ -53,9 +63,13 @@ def add_movie_old(request):
             return redirect(movie, permanent=False)
     else:
         form = MovieForm()
-    return render(request, "movies/movie_add.html", context={
-        "form": form,
-    })
+    return render(
+        request,
+        "movies/movie_add.html",
+        context={
+            "form": form,
+        },
+    )
 
 
 # @permission_required("movies.add_movie")
@@ -68,9 +82,13 @@ def add_movie(request):
             return redirect(movie, permanent=False)
     else:
         form = MovieModelForm()
-    return render(request, "movies/movie_form.html", context={
-        "form": form,
-    })
+    return render(
+        request,
+        "movies/movie_form.html",
+        context={
+            "form": form,
+        },
+    )
 
 
 class MovieCreateView(CreateView):
@@ -96,10 +114,14 @@ def edit_movie(request, pk):
             return redirect(movie)
     else:
         form = MovieModelForm(instance=movie)
-    return render(request, "movies/movie_form.html", context={
-        "form": form,
-        "movie": movie,
-    })
+    return render(
+        request,
+        "movies/movie_form.html",
+        context={
+            "form": form,
+            "movie": movie,
+        },
+    )
 
 
 @login_required
@@ -116,11 +138,14 @@ def review_movie(request, pk):
             return redirect("movie-detail", pk=movie.pk)
     else:
         form = ReviewForm()
-    return render(request, "movies/movie_review.html", context={
-        "form": form,
-        "movie": movie,
-    })
-
+    return render(
+        request,
+        "movies/movie_review.html",
+        context={
+            "form": form,
+            "movie": movie,
+        },
+    )
 
 
 class MovieUpdateView(UpdateView):
@@ -133,9 +158,7 @@ def delete_movie(request, pk):
     if request.method == "POST":
         movie.delete()
         return redirect("movie-list")
-    return render(request, "movies/movie_confirm_delete.html", context={
-        "movie": movie
-    })
+    return render(request, "movies/movie_confirm_delete.html", context={"movie": movie})
 
 
 class MovieDeleteView(DeleteView):
@@ -145,9 +168,9 @@ class MovieDeleteView(DeleteView):
 
 def get_director_list(request):
     directors = Director.objects.all()
-    return render(request, "movies/director_list.html", context={
-        "directors": directors
-    })
+    return render(
+        request, "movies/director_list.html", context={"directors": directors}
+    )
 
 
 def add_director(request):
@@ -158,16 +181,14 @@ def add_director(request):
             return redirect("director-detail", pk=director.pk)
     else:
         form = DirectorForm()
-    return render(request, "movies/director_form.html", context={
-        "form": form
-    })
+    return render(request, "movies/director_form.html", context={"form": form})
 
 
 def get_director_detail(request, pk):
     director = get_object_or_404(Director, pk=pk)
-    return render(request, "movies/director_detail.html", context={
-        "director": director
-    })
+    return render(
+        request, "movies/director_detail.html", context={"director": director}
+    )
 
 
 # def edit_director(request, pk):
@@ -190,9 +211,9 @@ def delete_director(request, pk):
     if request.method == "POST":
         director.delete()
         return redirect("director-list")
-    return render(request, "movies/director_delete.html", context={
-        "director": director
-    })
+    return render(
+        request, "movies/director_delete.html", context={"director": director}
+    )
 
 
 def edit_obj(klass, form_class, context_object_name="obj"):
@@ -205,26 +226,26 @@ def edit_obj(klass, form_class, context_object_name="obj"):
                 return redirect(f"{klass._meta.model_name}-detail", pk=obj.pk)
         else:
             form = form_class(instance=obj)
-        return render(request, f"{klass._meta.app_label}/{klass._meta.model_name}_form.html", context={
-            "obj": obj,
-            "form": form
-        })
+        return render(
+            request,
+            f"{klass._meta.app_label}/{klass._meta.model_name}_form.html",
+            context={"obj": obj, "form": form},
+        )
 
     return view
+
 
 edit_director = edit_obj(Director, DirectorForm)
 
 
 @permission_required("movies.approve_review")
 def unapproved_reviews(request):
-    reviews = (Review.objects
-        .select_related("movie", "user")
-        .filter(is_approved=False)
-        .all()
+    reviews = (
+        Review.objects.select_related("movie", "user").filter(is_approved=False).all()
     )
-    return render(request, "movies/unapproved_reviews.html", context={
-        "reviews": reviews
-    })
+    return render(
+        request, "movies/unapproved_reviews.html", context={"reviews": reviews}
+    )
 
 
 @permission_required("movies.approve_review")

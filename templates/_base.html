@@ -20,7 +20,7 @@
   <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'index' %}">NMDB</a>
+        <a class="navbar-brand" href="{% url 'index' %}">{{ page_title|default:"NMDB" }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -51,7 +51,7 @@
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">{{ request.session.movies_seen|default:0 }}</a>
+              <a class="nav-link" href="#">Profile</a>
             </li>
             {% else %}
             <li class="nav-item">
@@ -79,7 +79,7 @@
 
   <footer class="footer mt-auto py-3 bg-light">
     <div class="container">
-      <p class="text-center m-0 p-0 text-muted">Copyright &copy; 2022 - PyTrAl10</p>
+      <p class="text-center m-0 p-0 text-muted">Copyright &copy; {{ copyright_year }} - {{ copyright_company }}</p>
     </div>
   </footer>
     {% block scripts %}

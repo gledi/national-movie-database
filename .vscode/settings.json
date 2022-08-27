@@ -1,5 +1,11 @@
 {
     "editor.fontSize": 32,
     "workbench.colorTheme": "Default Light+",
-    "terminal.integrated.fontSize": 32
+    "terminal.integrated.fontSize": 32,
+    "python.formatting.provider": "black",
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length", "88"],
+    "[python]": {
+      "editor.formatOnSave": true
+    }
 }
