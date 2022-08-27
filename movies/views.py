@@ -26,8 +26,9 @@ def get_movie_list(request):
 
 
 class MovieListView(ListView):
-    model = Movie
+    queryset = Movie.objects.select_related("director").all()
     context_object_name = "movies"
+    paginate_by: int = 10
 
 
 def get_movie_detail(request, pk):

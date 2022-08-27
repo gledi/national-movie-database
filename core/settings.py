@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_extensions",
     "debug_toolbar",
     "rest_framework",
     "pages",  # pages.apps.PagesConfig

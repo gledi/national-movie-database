@@ -10,17 +10,20 @@ from rest_framework.response import Response
 from movies.models import Movie
 from .serializers import MovieModelSerializer
 
+
 class MovieListCreateView(APIView):
     def get(self, request: Request, format=None) -> Response:
         page_num = int(request.GET.get("page", "1"))
-        movies = Movie.objects.order_by('-pk').all()
+        movies = Movie.objects.order_by("-pk").all()
         paginator = Paginator(movies, per_page=2)
         try:
             page = paginator.page(page_num)
         except EmptyPage:
             raise Http404("No more movies")
         ms = MovieModelSerializer(page.object_list, many=True)
-        return Response({"items": ms.data, "total": paginator.count, "page": page.number})
+        return Response(
+            {"items": ms.data, "total": paginator.count, "page": page.number}
+        )
 
     def post(self, request: Request, format=None) -> Response:
         ms = MovieModelSerializer(data=request.data)
