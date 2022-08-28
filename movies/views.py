@@ -1,8 +1,9 @@
-from django.http import Http404
+from django.http import Http404, HttpRequest
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
 from django.views.generic import (
     ListView,
     DetailView,
@@ -11,6 +12,7 @@ from django.views.generic import (
     DeleteView,
 )
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from movies.models import Director, Movie, Review
 from movies.forms import DirectorForm, MovieForm, MovieModelForm, ReviewForm
@@ -31,6 +33,31 @@ class MovieListView(ListView):
     queryset = Movie.objects.select_related("director").all()
     context_object_name = "movies"
     paginate_by: int = 10
+
+
+def search_movies(request: HttpRequest):
+    qs = Movie.objects.select_related("director").all()
+    search_query = request.GET.get("q")
+    if search_query:
+        vector = SearchVector("title") + SearchVector("plot")
+        query = SearchQuery(search_query)
+        qs = (
+            Movie.objects.annotate(rank=SearchRank(vector, query))
+            .filter(rank__gt=0)
+            .order_by("-rank")
+        )
+    page = int(request.GET.get("page", 1))
+    paginator = Paginator(qs, per_page=10)
+    page_obj = paginator.get_page(page)
+    return render(
+        request,
+        "movies/movie_search_results.html",
+        context={
+            "paginator": paginator,
+            "page_obj": page_obj,
+            "search_query": search_query,
+        },
+    )
 
 
 def get_movie_detail(request, pk):

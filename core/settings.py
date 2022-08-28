@@ -1,13 +1,19 @@
+import os
 from pathlib import Path
+
+from environs import Env
+
+
+env = Env()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-wp(4)k@qkgd)rw=+u92dh56ut0hz-)s)jvmw!#udm7#idup4rr"
+SECRET_KEY = env("SECRET_KEY", "SuperSecret")
 
-DEBUG = True
+DEBUG = env.bool("DEBUG", False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", [])
 
 
 INSTALLED_APPS = [
@@ -64,12 +70,8 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+_default_dburl = (BASE_DIR / "db.sqlite3").as_uri().replace("file:/", "sqlite:/")
+DATABASES = {"default": env.dj_db_url("DATABASE_URL", default=_default_dburl)}
 
 
 # Password validation

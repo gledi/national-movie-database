@@ -1,0 +1,23 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<h1>Search Results</h1>
+<hr>
+<form action="" method="get">
+  <div class="input-group">
+    <span class="input-group-text">
+      <i class="bi bi-search"></i>
+    </span>
+    <input type="search" name="q" class="form-control" value="{{ search_query }}">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </div>
+</form>
+<hr>
+<ul>
+{% for movie in page_obj.object_list %}
+  <li>
+    <a href="{% url 'movie-detail' pk=movie.pk %}">{{ movie.title }}</a>
+  </li>
+{% endfor %}
+</ul>
+{% endblock content %}
