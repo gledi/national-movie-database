@@ -1,5 +1,14 @@
 {% extends '_base.html' %}
 
+{% block styles %}
+{{ block.super }}
+<style>
+.headline > b {
+  background-color: yellow;
+}
+</style>
+{% endblock styles %}
+
 {% block content %}
 <h1>Search Results</h1>
 <hr>
@@ -13,11 +22,12 @@
   </div>
 </form>
 <hr>
-<ul>
 {% for movie in page_obj.object_list %}
-  <li>
+  <article>
     <a href="{% url 'movie-detail' pk=movie.pk %}">{{ movie.title }}</a>
-  </li>
+    <div class="headline">
+      {{ movie.headline|safe }}
+    </div>
+  </article>
 {% endfor %}
-</ul>
 {% endblock content %}

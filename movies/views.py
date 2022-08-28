@@ -12,7 +12,12 @@ from django.views.generic import (
     DeleteView,
 )
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import (
+    SearchVector,
+    SearchQuery,
+    SearchRank,
+    SearchHeadline,
+)
 
 from movies.models import Director, Movie, Review
 from movies.forms import DirectorForm, MovieForm, MovieModelForm, ReviewForm
@@ -41,9 +46,14 @@ def search_movies(request: HttpRequest):
     if search_query:
         vector = SearchVector("title") + SearchVector("plot")
         query = SearchQuery(search_query)
+        headline = SearchHeadline("plot", query)
         qs = (
-            Movie.objects.annotate(rank=SearchRank(vector, query))
-            .filter(rank__gt=0)
+            Movie.objects.annotate(
+                search=vector,
+                rank=SearchRank(vector, query),
+            )
+            .annotate(headline=headline)
+            .filter(search=query)
             .order_by("-rank")
         )
     page = int(request.GET.get("page", 1))
