@@ -17,19 +17,24 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", [])
 
 
 INSTALLED_APPS = [
+    # builtin apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    # 3rd party apps
     "crispy_forms",
     "crispy_bootstrap5",
     "django_extensions",
     "debug_toolbar",
     "rest_framework",
-    "pages",  # pages.apps.PagesConfig
     "users",
+    "registration",
+    # local apps
+    "pages",  # pages.apps.PagesConfig
     "movies",
     "apiv1",
 ]
@@ -156,3 +161,7 @@ REST_FRAMEWORK = {
 PAGE_TITLE = "NMDB"
 COPYRIGHT_YEAR = 2022
 COPYRIGHT_COMPANY = "PyTRAL10"
+
+
+# Registration
+ACCOUNT_ACTIVATION_DAYS = 7
