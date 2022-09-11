@@ -1,5 +1,8 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import stripe
 
 
 def index(request):
@@ -20,6 +23,57 @@ def contact_us(request):
 
 def privacy_policy(request):
     return render(request, "pages/privacy_policy.html")
+
+
+def shop(request):
+    return render(request, "pages/shop.html", context={})
+
+
+@csrf_exempt
+def get_stripe_pubkey(request):
+    if request.method == "GET":
+        pub_key = settings.STRIPE_PUBLISHABLE_KEY
+        return JsonResponse({"publicKey": pub_key})
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == "GET":
+        domain_url = "http://localhost:8000/"
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        try:
+            # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url
+                + "payments/success?session_id={CHECKOUT_SESSION_ID}",
+                cancel_url=domain_url + "payments/cancelled/",
+                payment_method_types=["card"],
+                mode="payment",
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": "eur",
+                            "unit_amount": 2000,
+                            "product_data": {
+                                "name": "T-Shirt",
+                                "description": "Comfortable cotton t-shirt",
+                            },
+                        },
+                        "quantity": 1,
+                    }
+                ],
+            )
+            return JsonResponse({"sessionId": checkout_session["id"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
+
+
+def payment_success(request):
+    return render(request, "pages/payment_success.html")
+
+
+def payment_cancel(request):
+    return render(request, "pages/payment_cancelled.html")
 
 
 import sqlite3
