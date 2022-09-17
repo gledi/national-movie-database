@@ -16,8 +16,8 @@
   <p>Still Available: <b>{{ movie.available_seats }}</b></p>
 </div>
 <div class="d-flex justify-content-center align-items-center">
-  <input class="form-control" type="number" name="quantity" value="1">
-  <button class="btn btn-primary" id="submitBtn">Buy</button>
+  <input class="form-control" type="number" name="quantity" value="1" max="{{ movie.available_seats }}" min="1">
+  <button class="btn btn-primary" id="submitBtn"{% if movie.available_seats == 0 %} disabled{% endif%}>Buy</button>
 </div>
 <hr>
 {% if reviews %}

@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 from django.http import Http404, HttpRequest, JsonResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -316,6 +317,10 @@ def approve_review(request, pk):
 def buy_movie(request, movie_id):
     movie = get_object_or_404(Movie, pk=movie_id)
     quantity = int(request.GET.get("quantity", "1"))
+    if quantity > movie.available_seats:
+        print("canot buy")
+        return JsonResponse({"error": "Not that many seats available"}, status=400)
+
     if request.method == "GET":
         domain_url = "http://localhost:8000/"
         stripe.api_key = settings.STRIPE_SECRET_KEY
