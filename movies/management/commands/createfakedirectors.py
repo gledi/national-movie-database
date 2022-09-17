@@ -1,5 +1,4 @@
 import io
-import random
 
 from django.core.management.base import BaseCommand
 from django.core.files.images import ImageFile
@@ -20,12 +19,12 @@ class Command(BaseCommand):
         for i in range(options["count"]):
             first_name = fake.first_name()
             last_name = fake.last_name()
-            filename = f'{first_name}_{last_name}_{i}.png'.lower()
+            filename = f"{first_name}_{last_name}_{i}.png".lower()
             director = Director(
                 first_name=first_name,
                 last_name=last_name,
-                bio='\n'.join(fake.paragraphs(6)),
-                birthdate=fake.date_between('-80y', '-20y'),
+                bio="\n".join(fake.paragraphs(6)),
+                birthdate=fake.date_between("-80y", "-20y"),
                 photo=ImageFile(io.BytesIO(fake.image()), name=filename),
             )
             directors.append(director)
