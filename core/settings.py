@@ -26,14 +26,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     # 3rd party apps
-    "crispy_forms",
-    "crispy_bootstrap5",
     "django_extensions",
     "debug_toolbar",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "rest_framework",
-    "users",
     "registration",
+    "mptt",
     # local apps
+    "users",
     "pages",  # pages.apps.PagesConfig
     "movies",
     "apiv1",

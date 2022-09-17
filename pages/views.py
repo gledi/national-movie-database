@@ -2,11 +2,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.utils import timezone
 import stripe
 
 
 def index(request):
-    print(request.session)
     greeting = "I don't know who you are!"
     if request.user.is_authenticated:
         greeting = f"Hello {request.user.get_full_name()}"
@@ -68,7 +68,20 @@ def create_checkout_session(request):
             return JsonResponse({"error": str(e)})
 
 
+from movies.models import Movie, Purchase
+
+
 def payment_success(request):
+    movie_id = request.GET.get("movie_id")
+    if movie_id is not None:
+        pk = int(movie_id)
+        quantity = int(request.GET.get("quantity"))
+        movie = Movie.objects.get(pk=pk)
+        Purchase.objects.create(
+            movie=movie,
+            quantity=quantity,
+            purchased_on=timezone.now(),
+        )
     return render(request, "pages/payment_success.html")
 
 

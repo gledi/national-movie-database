@@ -26,4 +26,5 @@ urlpatterns = [
     path("directors/<int:pk>/", views.get_director_detail, name="director-detail"),
     path("directors/<int:pk>/edit/", views.edit_director, name="director-edit"),
     path("directors/<int:pk>/delete/", views.delete_director, name="director-delete"),
+    path("buy-movie-ticket/<int:movie_id>/", views.buy_movie, name="buy-movie"),
 ]

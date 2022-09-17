@@ -1,8 +1,23 @@
 from django.db import models, transaction
+from django.db.models import Sum
 from django.urls import reverse
 from django.conf import settings
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from mptt.models import MPTTModel, TreeForeignKey
+
+
+class Genre(MPTTModel):
+    name = models.CharField(max_length=50, unique=True)
+    parent = TreeForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+    )
+
+    class MPTTMeta:
+        order_insertion_by = ["name"]
+
+    def __str__(self):
+        return self.name
 
 
 class Director(models.Model):
@@ -31,16 +46,30 @@ class Movie(models.Model):
     ]
 
     title = models.CharField(_("title"), max_length=255)
-    slug = models.SlugField(null=True)
+    slug = models.SlugField(null=True, max_length=255)
     year = models.IntegerField()
     runtime = models.IntegerField()
     plot = models.TextField(null=True)
     rating = models.CharField(max_length=10, choices=RATINGS)
+    genre = models.ForeignKey(
+        Genre,
+        null=True,
+        blank=True,
+        related_name="movies",
+        on_delete=models.SET_NULL,
+    )
     director = models.ForeignKey(
         Director, verbose_name=_("director"), on_delete=models.CASCADE
     )
     # director_id = models.IntegerField()
     actors = models.ManyToManyField("movies.Actor")
+    seats = models.IntegerField(default=0)
+    price = models.IntegerField(default=10)
+
+    @property
+    def available_seats(self):
+        sold = self.purchases.aggregate(Sum("quantity"))
+        return self.seats - sold.get("quantity__sum", 0)
 
     @property
     def props(self):
@@ -98,3 +127,12 @@ class Review(models.Model):
         permissions = [
             ("approve_review", "Can approve review"),
         ]
+
+
+class Purchase(models.Model):
+    movie = models.ForeignKey(Movie, related_name="purchases", on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    purchased_on = models.DateTimeField()
+
+    class Meta:
+        db_table = "purchases"

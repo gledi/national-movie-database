@@ -1,4 +1,4 @@
-from django.http import Http404, HttpRequest
+from django.http import Http404, HttpRequest, JsonResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -18,6 +18,9 @@ from django.contrib.postgres.search import (
     SearchRank,
     SearchHeadline,
 )
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import stripe
 
 from movies.models import Director, Movie, Review
 from movies.forms import DirectorForm, MovieForm, MovieModelForm, ReviewForm
@@ -35,7 +38,7 @@ def get_movie_list(request):
 
 
 class MovieListView(ListView):
-    queryset = Movie.objects.select_related("director").all()
+    queryset = Movie.objects.select_related("director").order_by("-pk").all()
     context_object_name = "movies"
     paginate_by: int = 10
 
@@ -306,3 +309,42 @@ def approve_review(request, pk):
         review.is_approved = True
         review.save()
         return redirect("unapproved-reviews")
+
+
+@csrf_exempt
+@login_required
+def buy_movie(request, movie_id):
+    movie = get_object_or_404(Movie, pk=movie_id)
+    quantity = int(request.GET.get("quantity", "1"))
+    if request.method == "GET":
+        domain_url = "http://localhost:8000/"
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        success_url = (
+            domain_url
+            + "payments/success?session_id={CHECKOUT_SESSION_ID}"
+            + f"&movie_id={movie.pk}&quantity={quantity}"
+        )
+        try:
+            # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+            checkout_session = stripe.checkout.Session.create(
+                success_url=success_url,
+                cancel_url=domain_url + "payments/cancelled/",
+                payment_method_types=["card"],
+                mode="payment",
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": "eur",
+                            "unit_amount": movie.price * 100,
+                            "product_data": {
+                                "name": movie.title,
+                                "description": movie.plot,
+                            },
+                        },
+                        "quantity": quantity,
+                    }
+                ],
+            )
+            return JsonResponse({"sessionId": checkout_session["id"]})
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
