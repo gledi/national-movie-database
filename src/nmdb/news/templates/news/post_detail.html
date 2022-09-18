@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load i18n humanize %}
+
+{% block title %}
+{{ post.title }} · {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+<article>
+  <header class="border-bottom mb-4">
+    <div class="my-2">
+      <a class="text-decoration-none fw-semibold fs-5" href="{% url 'news:post-list' %}">
+        <i class="bi bi-caret-left-fill"></i>
+        {% translate 'Back to posts' %}
+      </a>
+    </div>
+    <h1 class="text-truncate" data-bs-toggle="tooltip" data-bs-title="{{ post.title }}">{{ post.title }}</h1>
+  </header>
+  <section class="d-flex justify-content-between align-items-center text-muted fw-semibold">
+    <p>
+      <i class="bi-person"></i>
+      <a class="text-decoration-none" href="{% url 'news:post-list' %}?author={{ post.author_id }}">{{ post.author.get_full_name }}</a>
+    </p>
+    <p><i class="bi-calendar-event"></i> {{ post.published_on|naturaltime }}</p>
+  </section>
+  <section>
+    {{ post.body_html|safe }}
+  </section>
+</article>
+{% endblock content %}

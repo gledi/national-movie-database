@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-4">
+    <figure class="figure">
+      <img src="{{ picture.photo.url }}" alt="{{ profile.user.get_full_name }}" class="figure-img img-fluid rounded">
+      <figcaption class="figure-caption text-center">{{ picture.caption|default_if_none:profile.user.get_full_name }}</figcaption>
+    </figure>
+  </div>
+  <div class="col-8"></div>
+</div>
+{% endblock content %}

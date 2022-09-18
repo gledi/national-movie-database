@@ -1,0 +1,5 @@
+export DEBUG=true
+export SECRET_KEY=SuperSecret
+export STRIPE_PUBLISHABLE_KEY="pk_test_51Jw774LmYIXXKBgS40qd7YI2c3no8bGZyGTjkO13uQxLT30DluL0FtAiP9NFEdTgmvAsMqo4d5mOYHQQ9ECTbf0M00Hqmw8Tqw"
+export STRIPE_SECRET_KEY="sk_test_51Jw774LmYIXXKBgSc9vLE8zLUCBIA9PfynBv9Nq1k5Cugad2CKuXN3Ozcju5exC3GGBDcfiUXjoQ7e1qSFgP02Ae00kaxly7ob"
+export DATABASE_URL=postgres://movie:star@localhost:25432/moviesdb
