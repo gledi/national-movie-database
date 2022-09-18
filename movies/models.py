@@ -69,7 +69,8 @@ class Movie(models.Model):
     @property
     def available_seats(self):
         sold = self.purchases.aggregate(Sum("quantity"))
-        return self.seats - sold.get("quantity__sum", 0)
+        total = 0 if sold.get("quantity__sum") is None else sold.get("quantity__sum")
+        return self.seats - total
 
     @property
     def props(self):

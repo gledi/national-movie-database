@@ -1,4 +1,3 @@
-from http.client import HTTPResponse
 from django.http import Http404, HttpRequest, JsonResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
