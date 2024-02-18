@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static i18n movietags %}
+
+{% block title %}{{ movie.title }} · {{ block.super }}{% endblock title %}
+
+{% block extrastyles %}
+<link rel="stylesheet" href="{% static 'movies/styles/rate.css' %}">
+{% endblock extrastyles %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-end my-2">
+    <div>
+      <h1 class="fs-3 m-0">{{ movie.title }}</h1>
+      <h2 class="fs-6 fw-light text-muted">{{ movie.year }} · {{ movie.mpaa_rating }} · {{ movie.runtime|runtime }}</h2>
+    </div>
+    <div class="d-flex gap-5 justify-content-end">
+      <div class="d-flex flex-column">
+        <div class="text-center fs-5">{% translate "Rating" %}</div>
+        <div class="d-flex gap-2">
+          <i class="bi-star-fill fs-4 text-warning"></i>
+          <div class="fs-4">
+            <strong
+              id="current-movie-rating"
+              class="fw-semibold">
+              {{ avgrating|floatformat:1|default:"-" }}
+            </strong>
+            <span class="text-muted fw-light">/</span>
+            <em class="fw-light">5</em>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <div class="text-center fs-5">{% translate "Your Rating" %}</div>
+        {% if user.is_authenticated %}
+        <div
+            class="d-flex star-rate"
+            data-rateurl="{% url 'movies:movie-review' pk=movie.pk %}"
+            data-user-rating="{{ rating|default_if_none:0 }}">
+          <i class="star-rate-star bi bi-star fs-4 text-warning px-1" data-rating="1"></i>
+          <i class="star-rate-star bi bi-star fs-4 text-warning px-1" data-rating="2"></i>
+          <i class="star-rate-star bi bi-star fs-4 text-warning px-1" data-rating="3"></i>
+          <i class="star-rate-star bi bi-star fs-4 text-warning px-1" data-rating="4"></i>
+          <i class="star-rate-star bi bi-star fs-4 text-warning px-1" data-rating="5"></i>
+          {% csrf_token %}
+        </div>
+        {% else %}
+        <div class="star-rate star-rate-disabled text-center">
+          <i class="bi bi-slash-circle text-muted fs-4"
+            data-bs-toggle="tooltip"
+            data-bs-custom-class="danger-tooltip"
+            data-bs-title="{% translate 'Only logged in users can vote!' %}"></i>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-6">
+      <div id="carousel-movie-posters" class="carousel slide" data-bs-ride="true">
+        <div class="carousel-indicators">
+          {% for photo in movie.photos.all %}
+          <button type="button" data-bs-target="#carousel-movie-posters" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="{{ photo }}"></button>
+          {% endfor %}
+        </div>
+        <div class="carousel-inner">
+          {% for photo in movie.photos.all %}
+          <div class="carousel-item{% if forloop.first %} active{% endif %}">
+            <img src="{{ photo.photo.url }}" class="d-block w-100" alt="{{ photo }}">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>{{ photo.caption }}</h5>
+              <p>{{ photo.description }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-movie-posters" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">{% translate "Previous" %}</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel-movie-posters" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">{% translate "Next" %}</span>
+        </button>
+      </div>
+    </div>
+    <div class="col-6">
+      <h1>{{ movie.title }}</h1>
+      <section class="fs-4 fw-light mb-4">{{ movie.year }} · {{ movie.mpaa_rating }} · {{ movie.runtime|runtime }}</section>
+      <section class="mb-4">{% translate "Director" %}: <strong>{{ movie.director }}</strong></section>
+      <section class="mb-4">
+        {% for tag in movie.tags.all %}
+        <span class="badge text-bg-primary">{{ tag }}</span>
+        {% endfor %}
+      </section>
+      <section>
+        {{ movie.plot_html|safe }}
+      </section>
+      <h2 class="border-bottom">{% translate "Cast" %}</h2>
+      <div class="d-flex flex-wrap">
+        {% for member in cast %}
+        <div class="d-flex gap-4 w-50 mb-2">
+          {% for photo in member.actor.photos.all %}
+          <img src="{{ photo.thumb.url }}"
+               width="96" height="96"
+               class="shadow-sm img-thumbnail rounded-circle"
+               alt="{{ member.actor.name }}" />
+          {% endfor %}
+          <div class="d-flex flex-column flex-grow-1">
+            <strong>{{ member.actor.name }}</strong>
+            <span>as <em>{{ member.role }}</em></span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="ratingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <i class="toast-icon bi bi-info-circle-fill me-2 text-primary"></i>
+        <strong class="me-auto">{% translate 'Notification' %}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="{% translate 'Close' %}"></button>
+      </div>
+      <div class="toast-body"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+
+</script>
+<script src="{% static 'movies/scripts/rate.js' %}"></script>
+{% endblock extrascripts %}
