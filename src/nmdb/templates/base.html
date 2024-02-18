@@ -1,0 +1,111 @@
+<!doctype html>{% load static i18n %}
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% translate 'National movie database' %}">
+    <meta name="author" content="Gledi">
+    {% block meta %}{% endblock meta %}
+    <title>{% block title %}National Movie Database · Python · Tirana · Albania · SDA{% endblock title %}</title>
+    {% block styles %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Concert+One&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    {% endblock styles %}
+    {% block extrastyles %}{% endblock extrastyles %}
+  </head>
+  <body class="d-flex flex-column h-100">
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand page-title" href="{% url 'pages:home' %}">NMDb</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'pages:home' %}">{% translate 'Home' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'movies:movie-list' %}">{% translate 'Movies' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'news:post-list' %}">{% translate 'News' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'pages:contact-us' %}">{% translate 'Contact Us' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'pages:about-us' %}">{% translate 'About Us' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'pages:privacy-policy' %}">{% translate 'Privacy Policy' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="">{% translate 'Shop' %}</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a href="" class="nav-link">
+                  <i class="bi bi-cart4"></i>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'auth_logout' %}">{% translate 'Logout' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'users:profile' %}">{% translate 'Profile' %}</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'auth_login' %}">{% translate 'Login' %}</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'registration_register' %}">{% translate 'Register' %}</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <form class="d-flex" role="search" method="get" action="{% url 'movies:movie-list' %}">
+                  <input class="form-control me-2" type="search" placeholder="{% translate 'Search' %}" aria-label="{% translate 'Search' %}" name="q" {% if search_query %} value={{ search_query }}{% endif %}>
+                  <button class="btn btn-outline-success" type="submit">{% translate 'Search' %}</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="flex-shrink-0">
+      <div class="container">
+        {% if messages %}
+        <section class="flash-messages">
+          {% for message in messages %}
+          <div role="alert" class="alert alert-{{ message.level_tag }}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </section>
+        {% endif %}
+        {% block content %}{% endblock content %}
+      </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container">
+        <p class="text-center m-0 p-0 text-muted fw-semibold">Copyright &copy; 2022 · Python · Tirana · Albania · SDA</p>
+      </div>
+    </footer>
+    {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script src="{% static 'scripts/main.js' %}"></script>
+    {% endblock scripts %}
+    {% block extrascripts %}{% endblock extrascripts %}
+  </body>
+</html>

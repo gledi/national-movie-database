@@ -1,0 +1,39 @@
+<nav aria-label="Pagination" class="mb-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
+        <i class="bi bi-chevron-double-left"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link">
+        <i class="bi bi-chevron-double-left"></i>
+      </span>
+    </li>
+    {% endif %}
+    {% for page in pages %}
+    <li class="page-item{% if page == paginator.ELLIPSIS %} disabled{% endif %}">
+      {% if page == paginator.ELLIPSIS %}
+      <span class="page-link">{{ page }}</span>
+      {% else %}
+      <a class="page-link{% if page == page_obj.number %} active{% endif %}" href="?page={{ page }}{% if queryparams %}&{{ queryparams }}{% endif %}">{{ page }}</a>
+      {% endif %}
+    </li>
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a href="?page={{ page_obj.next_page_number }}" class="page-link">
+        <i class="bi bi-chevron-double-right"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link">
+        <i class="bi bi-chevron-double-right"></i>
+      </span>
+    </li>
+    {% endif %}
+  </ul>
+</nav>

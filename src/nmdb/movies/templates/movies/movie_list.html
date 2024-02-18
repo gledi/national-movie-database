@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load i18n static imagekit movietags %}
+
+{% block content %}
+  <h1 class="border-bottom">{% translate "Movies" %}</h1>
+  {% include "_pagination.html" with page_obj=page_obj pages=pages only %}
+  <div class="row">
+    {% for movie in movies %}
+      <div class="col-6">
+        <div class="card mb-4">
+          <div class="row g-0">
+            <div class="col-4">
+              {% for photo in movie.photos.all %}
+              <img src="{{ photo.lg.url }}" class="img-fluid rounded-start" alt="{{ movie.caption|default:movie.title }}">
+              {% endfor %}
+            </div>
+            <div class="col-8">
+              <div class="card-body position-relative">
+                <a class="d-block card-title fs-4 text-decoration-none text-truncate"
+                   href="{% url 'movies:movie-detail' slug=movie.slug %}"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="{{ movie.title }}">
+                  {{ movie.title }}
+                </a>
+                <div class="card-text">{{ movie.headline|default:movie.plot_html|truncatechars_html:"140"|safe }}</div>
+                <div class="card-text">
+                  <h2 class="fs-6 fw-light text-muted">{{ movie.year }} · {{ movie.mpaa_rating }} · {{ movie.runtime|runtime }}</h2>
+                </div>
+                <span class="badge bg-warning position-absolute top-0 start-100 p-2 translate-middle rounded-pill">
+                  {{ movie.avgrate|default:"-.-" }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      {% if search_query %}
+      <div class="alert alert-info" role="alert">
+      {% blocktranslate %}
+      We could not find any results for your search <strong>{{ search_query }}</strong>
+      {% endblocktranslate %}
+      </div>
+      {% else %}
+      <div class="alert alert-warning" role="alert">{% translate 'No movies have been added yet!' %}</div>
+      {% endif %}
+    {% endfor %}
+</div>
+{% endblock content %}
