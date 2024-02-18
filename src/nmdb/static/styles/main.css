@@ -1,0 +1,38 @@
+html, body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+main > .container {
+  padding: 72px 0 0;
+}
+
+.page-title {
+  font-family: 'Concert One', cursive;
+  font-weight: 400;
+  background-color: #E1B517;
+  border: 2px solid #242424;
+  border-radius: 9px;
+  color: #242424;
+  margin: 0 1.5rem;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.5s ease-out;
+}
+
+.page-title:hover {
+  border-color: #000;
+  color: #000;
+  text-shadow: 1px 1px 0 gold;
+  box-shadow: rgba(192, 192, 201, 0.3) 0px 1px 2px 0px, rgba(192, 192, 201, 0.15) 0px 2px 6px 2px;
+}
+
+footer.footer p { font-size: 12px; }
+
+.danger-tooltip {
+  --bs-tooltip-bg: var(--bs-danger);
+}
+
+
+.bg-image {
+  background-repeat: no-repeat;
+  background-size: cover;
+}

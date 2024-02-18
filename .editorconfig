@@ -11,5 +11,8 @@ insert_final_newline = true
 [*.{html,css,js,json}]
 indent_size = 2
 
-[*.html]
+[*.{html,json}]
 insert_final_newline = false
+
+[Makefile]
+indent_style = tab

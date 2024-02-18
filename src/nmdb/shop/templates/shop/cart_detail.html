@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% load static cart_tags %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center">
+  <h1>Shopping Cart</h1>
+  <a href="{% url 'cart_clear' %}" class="btn btn-lg btn-danger">
+    <i class="bi bi-cart-dash"></i>
+    Clear Cart
+  </a>
+</div>
+<hr>
+<table class="table">
+  <thead>
+    <tr>
+      <th colspan="2">Product</th>
+      <th class="text-end">Price</th>
+      <th class="text-center">Quantity</th>
+      <th class="text-end">Total</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <th colspan="4" class="text-end">
+        Total
+      </th>
+      <th class="text-end">
+        $ {{ request.session.cart|total_amount }}
+      </th>
+      <th></th>
+    </tr>
+  </tfoot>
+  <tbody>
+  {% for key, product in request.session.cart.items  %}
+    <tr>
+      <td>
+        <img src="{{ product.image }}" width="90" height="120"><br>
+      </td>
+      <td>
+        <h5>{{ product.name }}</h5>
+        <p>{{ product.description }}</p>
+      </td>
+      <td class="text-end">$ {{ product.price }}</td>
+      <td class="text-center">
+        <a href="{% url 'item_decrement' id=product.product_id%}">
+          <i class="bi bi-dash"></i>
+        </a>
+        <b>{{ product.quantity }}</b>
+        <a href="{% url 'item_increment' id=product.product_id %}">
+          <i class="bi bi-plus"></i>
+        </a>
+      </td>
+      <td class="text-end">$ {{ product.price|multiply:product.quantity }}</td>
+      <td>
+        <a href="{% url 'item_clear' id=product.product_id %}" class="btn btn-warning">
+          <i class="bi bi-trash"></i>
+        </a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="5">
+        <div class="alert alert-warning" role="alert">
+          No products added to the shopping cart!
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="text-end">
+  <button id="checkout-btn" class="btn btn-lg btn-success">
+    <i class="bi bi-bag-check"></i>
+    Checkout
+  </button>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+const PAYMENTS_KEY_URL = "{% url 'payments_pubkey' %}";
+const PAYMENTS_CHECKOUT_SESSION_URL = "{% url 'payments_checkout_session' %}";
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'scripts/payments.js' %}"></script>
+{% endblock scripts %}
