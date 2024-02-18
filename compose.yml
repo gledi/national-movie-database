@@ -1,0 +1,43 @@
+version: "3.9"
+
+x-web: &web-svc
+  image: gledi/nmdb:develop
+  build:
+    context: .
+  container_name: nmdb-web
+  restart: unless-stopped
+  env_file:
+    - .env.local
+  depends_on:
+    - db
+    - cache
+  volumes:
+    - ./nmdb/:/app/
+    - ./static/:/static/:cached
+    - ./media/:/media/:cached
+
+services:
+  web:
+    <<: *web-svc
+    ports:
+      - "8000:8000"
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  db:
+    image: postgres:15-alpine
+    container_name: nmdb-db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.local
+    volumes:
+      - nmdb-db-data:/var/lib/postgresql/data
+
+  cache:
+    image: redis:7.4-alpine
+    container_name: nmdb-cache
+    ports:
+      - "6379:6379"
+
+volumes:
+  nmdb-db-data:

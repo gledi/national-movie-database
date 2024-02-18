@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 88
+extend-exclude = ["setup.py", "**/migrations/*.py"]
+target-version = "py313"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.isort]
+profile = "black"
+src_paths = ["src"]
+known_first_party = ["nmdb"]
+known_third_party = ["django"]
+default_section = "THIRDPARTY"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+extend_skip_glob = ["**/migrations/*.py"]
+
+[tool.pycln]
+all = true
+verbose = true
