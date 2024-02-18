@@ -1,0 +1,42 @@
+FROM python:3.11-bullseye as builder
+
+WORKDIR /app
+
+COPY ./requirements/ /requirements/
+
+RUN apt-get update \
+    && apt-get --yes upgrade \
+    && pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip wheel --no-cache-dir --no-deps --wheel-dir=/wheels --requirement=/requirements/prod.txt
+
+
+FROM python:3.11-slim-bullseye as final
+
+EXPOSE 8000
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY --from=builder /wheels/ /wheels/
+COPY --from=builder /requirements/ /requirements/
+
+RUN apt-get update \
+    && apt-get --yes upgrade \
+    && apt-get install --yes --no-install-recommends libpq5 \
+    && pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir --no-index --find-links=/wheels --requirement=/requirements/prod.txt \
+    && apt-get --yes autoremove \
+    && apt-get --yes autoclean \
+    && apt-get --yes clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /wheels /requirements \
+    && adduser --system --no-create-home --group --uid 1000 --disabled-password --gecos "" movie \
+    && chown -R movie:movie /app
+
+COPY --chown=movie ./nmdb/ /app/
+
+USER movie
+
+CMD ["daphne", "--bind", "0.0.0.0", "--port", "8000", "core.asgi:application"]
