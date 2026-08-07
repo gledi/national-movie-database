@@ -56,7 +56,7 @@ class Genre(MPTTModel):
     )
 
     class MPTTMeta:
-        order_insertion_by = ["name"]
+        order_insertion_by = ("name",)
 
     def __str__(self) -> str:
         return self.name
@@ -69,7 +69,7 @@ class Person(BaseModel):
         help_text=_("Person's full name"),
     )
     birthdate = models.DateField(_("birthdate"), null=True, blank=True)
-    bio = models.TextField(_("bio"), null=True, blank=True)
+    bio = models.TextField(_("bio"), blank=True)
     photos = GenericRelation(Photo, related_query_name="person")
 
     class Meta:
@@ -120,7 +120,7 @@ class Movie(BaseModel):
     title = models.CharField(_("title"), max_length=255)
     slug = models.SlugField(_("slug"), max_length=255, unique=True)
     year = models.IntegerField(_("year"), help_text=_("Movie's release year"))
-    plot = models.TextField(_("plot"), null=True, blank=True)
+    plot = models.TextField(_("plot"), blank=True)
     runtime = models.IntegerField(
         _("runtime"),
         null=True,
@@ -129,7 +129,6 @@ class Movie(BaseModel):
     )
     mpaa_rating = models.CharField(
         max_length=5,
-        null=True,
         blank=True,
         choices=Ratings.choices,
     )
@@ -157,13 +156,13 @@ class Movie(BaseModel):
         db_table = "movies"
         verbose_name = _("movie")
         verbose_name_plural = _("movies")
-        constraints = [
-            models.CheckConstraint(check=Q(year__gte=1900), name="chk_movies_year"),
+        constraints = (
+            models.CheckConstraint(condition=Q(year__gte=1900), name="chk_movies_year"),
             models.CheckConstraint(
-                check=Q(runtime__gte=20) & Q(runtime__lte=480),
+                condition=Q(runtime__gte=20) & Q(runtime__lte=480),
                 name="chk_movies_runtime",
             ),
-        ]
+        )
 
     def __str__(self) -> str:
         return f"{self.title} ({self.year})"
@@ -244,24 +243,22 @@ class Review(BaseModel):
         on_delete=models.CASCADE,
     )
     rating = models.IntegerField(_("rating"))
-    content = models.TextField(_("content"), null=True, blank=True)
+    content = models.TextField(_("content"), blank=True)
     is_approved = models.BooleanField(_("is approved"), default=False)
 
     class Meta:
         db_table = "reviews"
         verbose_name = _("review")
         verbose_name_plural = _("reviews")
-        permissions = [
-            ("approve_review", "Can approve review"),
-        ]
-        constraints = [
+        permissions = (("approve_review", "Can approve review"),)
+        constraints = (
             models.CheckConstraint(
-                check=Q(rating__gte=1) & Q(rating__lte=5), name="chk_reviews_rating"
+                condition=Q(rating__gte=1) & Q(rating__lte=5), name="chk_reviews_rating"
             ),
             models.UniqueConstraint(
                 fields=["user", "movie"], name="uq_reviews_user_movie"
             ),
-        ]
+        )
 
     def __str__(self) -> str:
         return f"{self.user!r} reviewd {self.movie!r} {self.rating} stars"

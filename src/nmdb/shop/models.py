@@ -20,7 +20,7 @@ class Product(BaseModel):
         choices=Currencies.choices,
         default=Currencies.EUR,
     )
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self) -> str:
         return self.name

@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
         photos = []
         for person in people:
-            resp = requests.get(IMAGE_URL)
+            resp = requests.get(IMAGE_URL, timeout=30)
             raw_img = resp.content
 
             filename = (

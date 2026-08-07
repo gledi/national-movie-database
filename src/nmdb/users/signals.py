@@ -24,7 +24,7 @@ def _gen_avatar(name: str, variant: str) -> ImageFile:
 def user_saved_handler(
     sender: type[User],
     instance: User,
-    created: bool,
+    created: bool,  # noqa: FBT001
     **kwargs: Any,
 ) -> None:
     if created:

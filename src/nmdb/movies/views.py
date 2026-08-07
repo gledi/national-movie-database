@@ -129,7 +129,7 @@ def review_movie(request: HttpRequest, pk: int) -> HttpResponse:
     movie = get_object_or_404(Movie, pk=pk)
     form = ReviewForm(request.POST)
     if form.is_valid():
-        review, created = Review.objects.update_or_create(
+        _review, created = Review.objects.update_or_create(
             user=request.user,
             movie=movie,
             defaults={"rating": form.cleaned_data["rating"]},

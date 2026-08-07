@@ -10,7 +10,6 @@ urlpatterns = [
     path("accounts/", include("nmdb.users.urls")),
     path("movies/", include("nmdb.movies.urls")),
     path("news/", include("nmdb.news.urls")),
-    # path("shop/", include("nmdb.shop.urls")),
     path("api/v1/", include("nmdb.apiv1.urls")),
 ]
 

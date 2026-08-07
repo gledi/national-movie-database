@@ -94,6 +94,6 @@ class Cart:
     @property
     def total_amount(self) -> float:
         total = 0.0
-        for key, value in self.cart.items():
+        for _, value in self.cart.items():
             total += float(value["price"]) * value["quantity"]
         return total

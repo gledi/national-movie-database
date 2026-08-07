@@ -17,7 +17,7 @@ class User(AbstractUser):
     name = models.CharField(_("name"), max_length=128)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name"]
+    REQUIRED_FIELDS = ["name"]  # noqa: RUF012
 
     objects = UserManager()
 
@@ -43,15 +43,14 @@ class Profile(models.Model):
         verbose_name=_("user"),
         on_delete=models.CASCADE,
     )
-    nickname = models.CharField(_("nickname"), max_length=32, null=True, blank=True)
+    nickname = models.CharField(_("nickname"), max_length=32, blank=True)
     telno = models.CharField(
         _("telephone number"),
         max_length=32,
-        null=True,
         blank=True,
     )
-    address = models.TextField(_("address"), null=True, blank=True)
-    bio = models.TextField(_("bio"), null=True, blank=True)
+    address = models.TextField(_("address"), blank=True)
+    bio = models.TextField(_("bio"), blank=True)
     photos = GenericRelation(Photo, related_query_name="profile")
 
     class Meta:

@@ -11,7 +11,7 @@ from nmdb.core.models import BaseModel
 
 class Photo(BaseModel):
     photo = models.ImageField(_("photo"), upload_to="photos/%Y/%m/%d")
-    caption = models.CharField(_("caption"), max_length=255, null=True, blank=True)
+    caption = models.CharField(_("caption"), max_length=255, blank=True)
     is_primary = models.BooleanField(_("is primary"), default=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.BigIntegerField()

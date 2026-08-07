@@ -17,7 +17,7 @@ class Command(BaseCommand):
         fake = Faker()
 
         people: list[Person] = []
-        for i in range(options["count"]):
+        for _ in range(options["count"]):
             name = fake.name()
             person = Person(
                 name=name,

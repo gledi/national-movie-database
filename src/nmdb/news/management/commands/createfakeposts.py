@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
         reporters = Group.objects.prefetch_related("user_set").get(name="Reporters")
 
-        users = [user for user in reporters.user_set.all()]
+        users = list(reporters.user_set.all())
 
         posts = []
         for _ in range(options["count"]):
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 title=title,
                 slug=slugify(title),
                 body="\n\n".join(
-                    fake.paragraph(random.randrange(4, 9), True)
+                    fake.paragraph(random.randrange(4, 9), variable_nb_sentences=True)
                     for _ in range(random.randrange(10, 30))
                 ),
                 author=random.choice(users),

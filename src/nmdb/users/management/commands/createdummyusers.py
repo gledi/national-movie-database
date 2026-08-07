@@ -48,7 +48,7 @@ class Command(BaseCommand):
         if users:
             User.objects.bulk_update(users, fields=["password"])
 
-    def _w(self, model_name: str, obj: str, created: bool) -> None:
+    def _w(self, model_name: str, obj: str, created: bool) -> None:  # noqa: FBT001
         fmt = "{} {!r} was {} successfully"
         msg = fmt.format(model_name, obj, "created" if created else "updated")
         style_func = self.style.SUCCESS if created else self.style.WARNING

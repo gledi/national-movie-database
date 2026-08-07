@@ -1,6 +1,5 @@
-import datetime as dt
-
 from django import forms
+from django.utils import timezone
 
 from .models import Movie
 
@@ -8,17 +7,17 @@ from .models import Movie
 class MovieForm(forms.ModelForm):
     class Meta:
         model = Movie
-        fields = [
+        fields = (
             "title",
             "year",
             "runtime",
             "plot",
             "mpaa_rating",
             "director",
-        ]
+        )
 
     def clean_year(self):
-        today = dt.date.today()
+        today = timezone.now().date()
         year = self.cleaned_data["year"]
         if year < 1900 or year > today.year + 1:
             raise forms.ValidationError("Invalid movie release year")

@@ -104,5 +104,5 @@ def create_checkout_session(request: HttpRequest) -> HttpResponse:
             line_items=line_items,
         )
         return JsonResponse({"sessionId": checkout_session["id"]})
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return JsonResponse({"error": str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)

@@ -1,27 +1,142 @@
+[project]
+name = "national-movie-database"
+version = "0.0.1"
+description = "National Movie Database - SDA TR, AL"
+authors = [
+  { name = "Gledi Caushaj", email = "gledi.alb@gmail.com" },
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+keywords = ["movies", "final", "project", "SDA"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Education",
+  "Topic :: Education",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "License :: Free For Educational Use",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3 :: Only",
+  "Framework :: Django :: 5",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "django[argon2]",
+  "environs",
+  "dj-database-url",
+  "djangorestframework",
+  "django-registration-redux",
+  "django-hashids",
+  "django-crispy-forms",
+  "crispy-bootstrap5",
+  "pillow",
+  "django-imagekit",
+  "django-mptt",
+  "django-taggit",
+  "django-filter",
+  "whitenoise[brotli]",
+  "stripe",
+  "psycopg[c,pool]",
+  "mistune",
+  "pygments",
+]
+
+[project.optional-dependencies]
+prod = ["gunicorn"]
+
+[dependency-groups]
+test = [
+  "pytest",
+  "pytest-django",
+  "coverage[toml]",
+  "pytest-cov",
+  "model-bakery",
+  "faker",
+]
+lint = ["ruff"]
+dev = [
+  "django-debug-toolbar",
+  "django-extensions",
+  "ipython",
+  "graphviz",
+  "mypy",
+  { include-group = "lint" },
+  { include-group = "test" },
+]
+
+[project.urls]
+Source = "https://github.com/gledi/national-movie-database"
+Issues = "https://github.com/gledi/national-movie-database/issues"
+
+[project.scripts]
+nmdb = "nmdb.manage:main"
+
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nmdb"]
+
 
 [tool.ruff]
 line-length = 88
-extend-exclude = ["setup.py", "**/migrations/*.py"]
 target-version = "py313"
+extend-exclude = ["**/migrations/*.py"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "C90", # mccabe
+  "UP",  # pyupgrade
+  "N",   # pep8-naming
+  "S",   # flake8-bandit
+  "BLE", # flake8-blind-exception
+  "A",   # flake8-builtins
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "COM", # flake8-commas
+  "DTZ", # flake8-datetimez
+  "DJ",  # flake8-django
+  "Q",   # flake8-quotes
+  "TID", # flake8-tidy-imports
+  "LOG", # flake8-logging
+  "G",   # flake8-logging-format
+  "PIE", # flake8-pie
+  "T20", # flake8-print
+  "PT",  # flake8-pytest-style
+  "RSE", # flake8-raise
+  "RET", # flake8-return
+  "SLF", # flake8-self
+  "SIM", # flake8-simplify
+  "PTH", # flake8-use-pathlib
+  "ERA", # flake8-eradicate
+  "FBT", # flake8-boolean-trap
+  "INT", # flake8-gettext
+  "RUF", # ruff specific rules
+]
+ignore = ["E731", "COM812"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"tests/**/*.py" = ["S101", "S105", "SLF001", "N802"]
+"**/migrations/*.py" = ["RUF001", "RUF012", "F401"]
+"**/management/commands/*.py" = ["S311"]
+"src/nmdb/users/avatargenerator.py" = ["S311"]
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.isort]
+known-first-party = ["nmdb"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20
+
+[tool.ruff.lint.flake8-self]
+ignore-names = ["_meta"]
+
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
-
-[tool.isort]
-profile = "black"
-src_paths = ["src"]
-known_first_party = ["nmdb"]
-known_third_party = ["django"]
-default_section = "THIRDPARTY"
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
-extend_skip_glob = ["**/migrations/*.py"]
-
-[tool.pycln]
-all = true
-verbose = true

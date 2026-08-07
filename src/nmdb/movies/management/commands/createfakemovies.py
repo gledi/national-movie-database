@@ -19,7 +19,7 @@ class Command(BaseCommand):
         people = Person.objects.all()
 
         movies: list[Movie] = []
-        for i in range(options["count"]):
+        for _ in range(options["count"]):
             title = fake.sentence()[:-1]
             slug = slugify(title)
             movie = Movie(
@@ -46,7 +46,7 @@ class Command(BaseCommand):
                     is_primary=i == 0,
                 )
 
-            people = [person for person in people]
+            people = list(people)
             roles = []
             for actor in random.sample(people, k=random.randrange(5, 11)):
                 roles.append(Role(movie=movie, actor=actor, role=fake.name()))

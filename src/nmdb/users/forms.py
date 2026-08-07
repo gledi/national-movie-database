@@ -9,7 +9,7 @@ class UserCreationForm(_UserCreationForm):
     class Meta(_UserCreationForm.Meta):
         model = User
         fields = ("email", "name")
-        field_classes = {"email": EmailField}
+        field_classes = {"email": EmailField}  # noqa: RUF012
 
 
 class UserChangeForm(_UserChangeForm):
@@ -22,4 +22,4 @@ class RegistrationForm(_UserCreationForm):
     class Meta(_UserCreationForm.Meta):
         model = User
         fields = ("email", "name")
-        field_classes = {"email": EmailField}
+        field_classes = {"email": EmailField}  # noqa: RUF012
